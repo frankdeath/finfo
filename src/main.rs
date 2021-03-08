@@ -1,6 +1,8 @@
 use std::path::Path;
+use std::fs;
 extern crate clap;
 use clap::{Arg, App, AppSettings, SubCommand};
+//use chrono::NaiveDateTime;
 
 fn main() {
     let matches = App::new("File Info (finfo)")
@@ -37,6 +39,18 @@ fn main() {
             let filepath = Path::new(filename);
             if filepath.exists() {
                 println!("Getting times of {:?}", filepath);
+                if let Ok(metadata) = fs::metadata(filename) {
+                  println!("Metadata: {:?}", metadata);
+                  if let Ok(mtime) = metadata.modified() {
+                      //let mtimef = NaiveDateTime::from_timestamp(mtime);
+                      //println!("modified {:?}", mtimef);
+                      println!("modified {:?}", mtime);
+                  } else {
+                      println!("Problem getting mtime");
+                  }
+                } else {
+                  println!("Problem getting metadata");
+                }
             }
     }
 
