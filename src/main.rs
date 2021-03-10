@@ -38,25 +38,20 @@ fn main() {
     if let Some(matches) = matches.subcommand_matches("time") {
             let filename = matches.value_of("FILENAME").unwrap();
             // Get ctime, mtime, and atime
-            get_times(&filename);
+            let _result = get_times(&filename);
     }
 }
 
-fn get_times(filename : &str) {
-    let filepath = Path::new(filename);
+fn get_times(filename : &str) -> Result<(), std::io::Error> {
+    let filepath = Path::new(&filename);
     if filepath.exists() {
         println!("Getting times of {:?}", filepath);
-        if let Ok(metadata) = fs::metadata(filename) {
-          //println!("Metadata: {:?}", metadata);
-          if let Ok(mtime) = metadata.modified() {
-              //println!("modified {:?}", mtime);
-              let datetime: DateTime<Local> = mtime.into();
-              println!("modified {}", datetime.format("%Y-%m-%d %H:%M:%S"));
-          } else {
-              println!("Problem getting mtime");
-          }
-        } else {
-          println!("Problem getting metadata");
-        }
+        let metadata = fs::metadata(filename)?;
+        //println!("Metadata: {:?}", metadata);
+        let mtime = metadata.modified()?;
+        //println!("modified {:?}", mtime);
+        let datetime: DateTime<Local> = mtime.into();
+        println!("modified {}", datetime.format("%Y-%m-%d %H:%M:%S"));
     }
+    Ok(())
 }
