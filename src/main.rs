@@ -45,13 +45,22 @@ fn main() {
 fn get_times(filename : &str) -> Result<(), std::io::Error> {
     let filepath = Path::new(&filename);
     if filepath.exists() {
-        println!("Getting times of {:?}", filepath);
         let metadata = fs::metadata(filename)?;
         //println!("Metadata: {:?}", metadata);
-        let mtime = metadata.modified()?;
-        //println!("modified {:?}", mtime);
-        let datetime: DateTime<Local> = mtime.into();
-        println!("modified {}", datetime.format("%Y-%m-%d %H:%M:%S"));
+        
+        println!("Getting times for {:#?}", filepath);
+        
+        let fmt_str = "%Y-%m-%d %H:%M:%S";
+        
+        let ctime_sys = metadata.created()?;
+        let ctime: DateTime<Local> = ctime_sys.into();
+        println!("created:  {}", ctime.format(fmt_str));
+        let mtime_sys = metadata.modified()?;
+        let mtime: DateTime<Local> = mtime_sys.into();
+        println!("modified: {}", mtime.format(fmt_str));
+        let atime_sys = metadata.accessed()?;
+        let atime: DateTime<Local> = atime_sys.into();
+        println!("accessed: {}", atime.format(fmt_str));
     }
     Ok(())
 }
